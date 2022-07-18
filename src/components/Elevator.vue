@@ -2,24 +2,26 @@
   <div class="main">
     <div class="mine">
       <div class="elevator" v-bind:style="{ marginTop: elevatorTop + 'px' }" :class="{'elevator-wait': elevatorWait}" >
-
+        <strong>{{resultFloor}}</strong>
+        <div v-if="downArrow" class="down-arrow">↓</div>
+        <div v-if="upArrow" class="up-arrow">↑</div>
       </div>
     </div>
     <div class="buttons">
       <div class="button-wrapper">
-        <button class="button" @click="moveElevator(1)">1</button>
+        <button class="button" @click="addFloor(1)">1</button>
       </div>
       <div class="button-wrapper">
-        <button class="button" @click="moveElevator(2)">2</button>
+        <button class="button" @click="addFloor(2)">2</button>
       </div>
       <div class="button-wrapper">
-        <button class="button" @click="moveElevator(3)">3</button>
+        <button class="button" @click="addFloor(3)">3</button>
       </div>
       <div class="button-wrapper">
-        <button class="button" @click="moveElevator(4)">4</button>
+        <button class="button" @click="addFloor(4)">4</button>
       </div>
       <div class="button-wrapper">
-        <button class="button" @click="moveElevator(5)">5</button>
+        <button class="button" @click="addFloor(5)">5</button>
       </div>
     </div>
   </div>
@@ -28,50 +30,79 @@
 <script>
   export default {
     data() {
+      let downArrow = false;
+      let upArrow = false;
+      let elevatorAvailable = true;
+      let elevatorTurn = [];
       let elevatorWait = false;
-      let ElevatorFloor = 5;
+      let elevatorFloor = 5;
+      let elevatorResultFloor;
       let elevatorTop = 400;
       const floors = [0, 100, 200, 300, 400];
       return {
+        elevatorAvailable,
+        elevatorTurn,
         elevatorWait,
-        ElevatorFloor,
+        elevatorFloor,
+        elevatorResultFloor,
         elevatorTop,
         floors
       }
     },
     methods: {
       moveElevator (resultFloor) {
+        this.elevatorAvailable = false;
+        this.resultFloor = resultFloor;
         let elevatorStep;
         if ((this.floors[resultFloor - 1] - this.elevatorTop) > 0) {
           elevatorStep = 10;
         } else {
           elevatorStep = -10;
         };
-        let timeStop = Math.abs(this.ElevatorFloor - resultFloor);
+        let timeStop = Math.abs(this.elevatorFloor - resultFloor);
         console.log(timeStop);
-        let moveIntereval = setInterval(() => {
+        let moveInterval = setInterval(() => {
             if(Math.abs(this.elevatorTop - this.floors[resultFloor - 1]) > 1)
             this.elevatorTop = this.elevatorTop + elevatorStep;
         }, 10);
 
         setTimeout(() => { 
-          clearInterval(moveIntereval);
-          this.ElevatorFloor = resultFloor;
+          clearInterval(moveInterval);
           this.elevatorWait = true;
           setTimeout(() => { 
           this.elevatorWait = false;
+          this.elevatorAvailable = true;
+          this.elevatorFloor = resultFloor;
+          this.resultFloor = '';
           }, 3000);
           }, timeStop*1000);
 
         
       },
 
+      addFloor(resultFloor) {
+        let floorBusy = false;
+        for(let i; i < this.elevatorTurn.length; i++) {
+          if (resultFloor == this.elevalorTurn[i]) {
+            floorBusy = true;
+          }
+        }
+        if((this.elevatorFloor !== resultFloor) && !floorBusy)
+        this.elevatorTurn.push(resultFloor);
+      }
+
+
     },
     computed: {
 
     },
     mounted() {
-      
+      setInterval(() => {
+        if(this.elevatorAvailable && (this.elevatorTurn.length > 0)) {
+          this.moveElevator(this.elevatorTurn[0]);
+          this.elevatorTurn.splice(0, 1);
+        }
+      }, 100)
     }
   }
 </script>
