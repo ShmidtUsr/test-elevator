@@ -2,9 +2,9 @@
   <div class="main">
     <div class="mine">
       <div class="elevator" v-bind:style="{ marginTop: elevatorTop + 'px' }" :class="{'elevator-wait': elevatorWait}" >
-        <strong>{{resultFloor}}</strong>
-        <div v-if="downArrow" class="down-arrow">↓</div>
-        <div v-if="upArrow" class="up-arrow">↑</div>
+        <strong class="result-floor">{{resultFloor}}</strong>
+        <div v-if="downArrow" class="arrow">↓</div>
+        <div v-if="upArrow" class="arrow">↑</div>
       </div>
     </div>
     <div class="buttons">
@@ -56,8 +56,10 @@
         let elevatorStep;
         if ((this.floors[resultFloor - 1] - this.elevatorTop) > 0) {
           elevatorStep = 10;
+          this.downArrow = true;
         } else {
           elevatorStep = -10;
+          this.upArrow = true;
         };
         let timeStop = Math.abs(this.elevatorFloor - resultFloor);
         console.log(timeStop);
@@ -74,6 +76,8 @@
           this.elevatorAvailable = true;
           this.elevatorFloor = resultFloor;
           this.resultFloor = '';
+          this.upArrow = false;
+          this.downArrow = false;
           }, 3000);
           }, timeStop*1000);
 
@@ -143,5 +147,15 @@
 .button {
   margin-top: 40px;
   margin-left: 40px;
+}
+
+.result-floor {
+  font-size: 35px;
+  margin-left: 45px;
+}
+
+.arrow {
+  font-size: 35px;
+  margin-left: 45px;
 }
 </style>
