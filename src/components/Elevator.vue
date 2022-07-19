@@ -24,6 +24,10 @@
         <button class="button" @click="addFloor(5)">5</button>
       </div>
     </div>
+    <div class="buttons">
+      <button @click="saveState">Сохранить состояние</button>
+      <button @click="clearState">Очистить</button>
+    </div>
   </div>
 </template>
 
@@ -53,16 +57,13 @@
       moveElevator (resultFloor) {
         this.elevatorAvailable = false;
         this.resultFloor = resultFloor;
-        let elevatorStep;
-        if ((this.floors[resultFloor - 1] - this.elevatorTop) > 0) {
-          elevatorStep = 10;
+        let timeStop = Math.abs(this.elevatorFloor - resultFloor);
+        let elevatorStep = (this.floors[resultFloor - 1] - this.elevatorTop) / timeStop /100 ;
+        if (elevatorStep > 0) {  
           this.downArrow = true;
         } else {
-          elevatorStep = -10;
           this.upArrow = true;
         };
-        let timeStop = Math.abs(this.elevatorFloor - resultFloor);
-        console.log(timeStop);
         let moveInterval = setInterval(() => {
             if(Math.abs(this.elevatorTop - this.floors[resultFloor - 1]) > 1)
             this.elevatorTop = this.elevatorTop + elevatorStep;
@@ -86,21 +87,44 @@
 
       addFloor(resultFloor) {
         let floorBusy = false;
-        for(let i; i < this.elevatorTurn.length; i++) {
-          if (resultFloor == this.elevalorTurn[i]) {
-            floorBusy = true;
+        if(this.elevatorTurn) {
+          for(let i = 0; i < this.elevatorTurn.length; i++) {
+            if (resultFloor == this.elevatorTurn[i]) {
+              floorBusy = true;
+            }
           }
         }
-        if((this.elevatorFloor !== resultFloor) && !floorBusy)
-        this.elevatorTurn.push(resultFloor);
-      }
+        
+        if((this.elevatorFloor !== resultFloor) && !floorBusy) {
+          this.elevatorTurn.push(resultFloor);
+        }
+      },
 
+      saveState () {
+        const {elevatorTop, elevatorTurn} = this;
+        let state = {
+          elevatorTop,
+          elevatorTurn
+        }
+        localStorage.setItem('elevatorState', JSON.stringify(state));
+      },
+      
+      clearState () {
+        localStorage.setItem('elevatorState', '');
+      },
 
     },
     computed: {
 
     },
     mounted() {
+      let state = localStorage.getItem('elevatorState') ? JSON.parse(localStorage.getItem('elevatorState')) : '';
+
+      if(state) {
+        this.elevatorTurn = state.elevatorTurn;
+        this.elevatorTop = state.elevatorTop;
+      }
+      
       setInterval(() => {
         if(this.elevatorAvailable && (this.elevatorTurn.length > 0)) {
           this.moveElevator(this.elevatorTurn[0]);
