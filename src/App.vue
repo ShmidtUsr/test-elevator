@@ -1,17 +1,28 @@
 <template>
   <div id="app">
     <div class="elevator-wrapper">
-      <Elevator/>
+      <elevator-main 
+      :elevatorsCount="elevatorsCount"
+      :floorsCount="floorsCount"
+      />
     </div>
   </div>
 </template>
 
 <script>
-  import Elevator from "./components/Elevator";
+  import ElevatorMain from "@/components/ElevatorMain";
 
   export default {
     components: {
-      Elevator
+      ElevatorMain
+    },
+    data() {
+      const elevatorsCount = 3;
+      const floorsCount = 4;
+      return {
+        elevatorsCount,
+        floorsCount
+      }
     }
   }
 </script>
