@@ -9,6 +9,7 @@
 </template>
 
 <script>
+import { watch } from '@vue/runtime-core';
   export default {
     props: {
       floorsCount: {
@@ -17,6 +18,10 @@
       },
       elevatorTurn: {
         type: Object,
+        required: true,
+      },
+      iElevator: {
+        type: Number,
         required: true,
       }
     },
@@ -69,6 +74,7 @@
           }, 3000);
           }, timeStop*1000);
       },
+
     },
     computed: {
 
@@ -80,7 +86,7 @@
         this.floors.push(i*100);
       }
 
-      console.log(this.elevatorTurn);
+      // console.log(this.elevatorTurn);
 
       // console.log(this.elevatorFloor);
       // console.log(this.elevatorTop);
@@ -93,6 +99,35 @@
       //   }
       // }, 100)
 
+    },
+    // updated() {
+    //   console.log('updated')
+    //   if(this.elevatorTurn) {
+    //    // this.moveElevator(this.elevatorTurn[0]);
+    //     this.$emit('deleteFloor', this.iElevator)
+    //   }
+
+    // },
+    // watch: {
+    //   elevatorTurn: function() {
+    //     console.log('watch')
+    //     if(this.elevatorTurn) {
+    //    // this.moveElevator(this.elevatorTurn[0]);
+    //     this.$emit('deleteFloor', this.iElevator)
+    //   }
+    //   }
+    // },
+    watch: {
+      elevatorTurn: {
+        handler(){
+          console.log('watch')
+          if(this.elevatorAvailable && (this.elevatorTurn.length > 0)) {
+            this.moveElevator(this.elevatorTurn[0]);
+            this.$emit('deleteFloor', this.iElevator)
+          }   
+        },
+        deep: true
+      }
     }
   }
 </script>

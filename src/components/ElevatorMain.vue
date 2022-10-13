@@ -4,6 +4,8 @@
     v-for="i in elevatorsCount"
     :floorsCount="floorsCount"
     :elevatorTurn="elevatorTurn[i]"
+    :iElevator="i"
+    @deleteFloor="deleteFloor"
     />
 
     <div class="buttons">
@@ -62,13 +64,18 @@
         }
 
         // console.log(this.elevatorTurn)
+      },
+      deleteFloor(iElevator) {
+        this.elevatorTurn[iElevator].splice(0, 1);
+        console.log(this.elevatorTurn[iElevator])
       }
     },
     mounted() {
       for(let i = 0; i < this.elevatorsCount; i++) {
           this.elevatorTurn[i] = [];
+          console.log(this.elevatorTurn[i]);
       }
-      // console.log(this.elevatorTurn)
+      
     },
   }
 </script>
