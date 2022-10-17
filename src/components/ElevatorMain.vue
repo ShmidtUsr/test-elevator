@@ -3,7 +3,7 @@
     <elevator 
     v-for="i in elevatorsCount"
     :floorsCount="floorsCount"
-    :elevatorTurn="elevatorTurn[i]"
+    :elevatorTurn="elevatorTurn[i-1]"
     :iElevator="i"
     @deleteFloor="deleteFloor"
     />
@@ -42,7 +42,7 @@
       addFloor(resultFloor) {
         let minTurn = 1000;
         let iMinTurn = 0;
-        // console.log(this.elevatorTurn)
+
         for(let i = 0; i < this.elevatorsCount; i++) {
           if (this.elevatorTurn[i].length < minTurn) {
             minTurn = this.elevatorTurn[i].length;
@@ -63,17 +63,17 @@
           this.elevatorTurn[iMinTurn].push(resultFloor);
         }
 
-        // console.log(this.elevatorTurn)
       },
       deleteFloor(iElevator) {
-        this.elevatorTurn[iElevator].splice(0, 1);
-        console.log(this.elevatorTurn[iElevator])
+        if(this.elevatorTurn[iElevator-1]) {
+          this.elevatorTurn[iElevator-1].splice(0, 1);
+        }
+        
       }
     },
     mounted() {
       for(let i = 0; i < this.elevatorsCount; i++) {
           this.elevatorTurn[i] = [];
-          console.log(this.elevatorTurn[i]);
       }
       
     },

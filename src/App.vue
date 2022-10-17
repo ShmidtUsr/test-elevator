@@ -17,7 +17,7 @@
       ElevatorMain
     },
     data() {
-      const elevatorsCount = 3;
+      const elevatorsCount = 4;
       const floorsCount = 4;
       return {
         elevatorsCount,

@@ -71,6 +71,8 @@ import { watch } from '@vue/runtime-core';
           this.resultFloor = '';
           this.upArrow = false;
           this.downArrow = false;
+
+          this.$emit('deleteFloor', this.iElevator)
           }, 3000);
           }, timeStop*1000);
       },
@@ -86,11 +88,6 @@ import { watch } from '@vue/runtime-core';
         this.floors.push(i*100);
       }
 
-      // console.log(this.elevatorTurn);
-
-      // console.log(this.elevatorFloor);
-      // console.log(this.elevatorTop);
-      // console.log(this.floors);
 
       // setInterval(() => {
       //   if(this.elevatorAvailable && (this.elevatorTurn.length > 0)) {
@@ -100,30 +97,11 @@ import { watch } from '@vue/runtime-core';
       // }, 100)
 
     },
-    // updated() {
-    //   console.log('updated')
-    //   if(this.elevatorTurn) {
-    //    // this.moveElevator(this.elevatorTurn[0]);
-    //     this.$emit('deleteFloor', this.iElevator)
-    //   }
-
-    // },
-    // watch: {
-    //   elevatorTurn: function() {
-    //     console.log('watch')
-    //     if(this.elevatorTurn) {
-    //    // this.moveElevator(this.elevatorTurn[0]);
-    //     this.$emit('deleteFloor', this.iElevator)
-    //   }
-    //   }
-    // },
     watch: {
       elevatorTurn: {
         handler(){
-          console.log('watch')
           if(this.elevatorAvailable && (this.elevatorTurn.length > 0)) {
             this.moveElevator(this.elevatorTurn[0]);
-            this.$emit('deleteFloor', this.iElevator)
           }   
         },
         deep: true
