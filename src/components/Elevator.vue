@@ -126,10 +126,10 @@ import { watch } from '@vue/runtime-core';
 }
 
 .elevator-wait {
-  animation: blink 1s infinite;
+  animation: flashing 1s infinite;
 }
 
-@keyframes blink {
+@keyframes flashing {
   0% { opacity: 1.0; }
   100% { opacity: 0.0; }
   0% { opacity: 1.0; }
