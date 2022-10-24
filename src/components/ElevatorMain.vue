@@ -4,7 +4,7 @@
     v-for="i in elevatorsCount"
     :floorsCount="floorsCount"
     :elevatorTurn="elevatorTurn[i-1]"
-    :iElevator="i"
+    :iElevator="i-1"
     @deleteFloor="deleteFloor"
     />
 
@@ -65,8 +65,8 @@
 
       },
       deleteFloor(iElevator) {
-        if(this.elevatorTurn[iElevator-1]) {
-          this.elevatorTurn[iElevator-1].splice(0, 1);
+        if(this.elevatorTurn[iElevator]) {
+          this.elevatorTurn[iElevator].splice(0, 1);
         }
         
       }

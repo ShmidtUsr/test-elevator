@@ -47,6 +47,9 @@ import { watch } from '@vue/runtime-core';
     },
     methods: {
       moveElevator (resultFloor) {
+
+        if (this.elevatorFloor !== this.elevatorTurn[0]) {
+        
         this.elevatorAvailable = false;
         this.resultFloor = resultFloor;
         let timeStop = Math.abs(this.elevatorFloor - resultFloor);
@@ -75,6 +78,12 @@ import { watch } from '@vue/runtime-core';
           this.$emit('deleteFloor', this.iElevator)
           }, 3000);
           }, timeStop*1000);
+
+
+        } else {
+          this.$emit('deleteFloor', this.iElevator)
+        }
+        
       },
 
     },
