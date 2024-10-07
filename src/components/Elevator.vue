@@ -1,60 +1,55 @@
 <template>
-  <div class="main">
-    <div class="mine">
+    <div class="mine" :style="{ height: floorsCount*100 + 'px' }">
       <div class="elevator" v-bind:style="{ marginTop: elevatorTop + 'px' }" :class="{'elevator-wait': elevatorWait}" >
         <strong class="result-floor">{{resultFloor}}</strong>
         <div v-if="downArrow" class="arrow">↓</div>
         <div v-if="upArrow" class="arrow">↑</div>
       </div>
     </div>
-    <div class="buttons">
-      <div class="button-wrapper">
-        <button class="button" @click="addFloor(1)">1</button>
-      </div>
-      <div class="button-wrapper">
-        <button class="button" @click="addFloor(2)">2</button>
-      </div>
-      <div class="button-wrapper">
-        <button class="button" @click="addFloor(3)">3</button>
-      </div>
-      <div class="button-wrapper">
-        <button class="button" @click="addFloor(4)">4</button>
-      </div>
-      <div class="button-wrapper">
-        <button class="button" @click="addFloor(5)">5</button>
-      </div>
-    </div>
-    <div class="buttons">
-      <button @click="saveState">Сохранить состояние</button>
-      <button @click="clearState">Очистить</button>
-    </div>
-  </div>
 </template>
 
 <script>
+import { watch } from '@vue/runtime-core';
   export default {
+    props: {
+      floorsCount: {
+        type: Number,
+        required: true,
+      },
+      elevatorTurn: {
+        type: Object,
+        required: true,
+      },
+      iElevator: {
+        type: Number,
+        required: true,
+      }
+    },
     data() {
       let downArrow = false;
       let upArrow = false;
       let elevatorAvailable = true;
-      let elevatorTurn = [];
       let elevatorWait = false;
-      let elevatorFloor = 5;
+      let elevatorFloor = 0;
       let elevatorResultFloor;
-      let elevatorTop = 400;
-      const floors = [0, 100, 200, 300, 400];
+      let elevatorTop = 0;
+      let floors = [];
       return {
         elevatorAvailable,
-        elevatorTurn,
         elevatorWait,
         elevatorFloor,
         elevatorResultFloor,
         elevatorTop,
-        floors
+        floors,
+        downArrow,
+        upArrow
       }
     },
     methods: {
       moveElevator (resultFloor) {
+
+        if (this.elevatorFloor !== this.elevatorTurn[0]) {
+        
         this.elevatorAvailable = false;
         this.resultFloor = resultFloor;
         let timeStop = Math.abs(this.elevatorFloor - resultFloor);
@@ -79,38 +74,16 @@
           this.resultFloor = '';
           this.upArrow = false;
           this.downArrow = false;
+
+          this.$emit('deleteFloor', this.iElevator)
           }, 3000);
           }, timeStop*1000);
 
-        
-      },
 
-      addFloor(resultFloor) {
-        let floorBusy = false;
-        if(this.elevatorTurn) {
-          for(let i = 0; i < this.elevatorTurn.length; i++) {
-            if (resultFloor == this.elevatorTurn[i]) {
-              floorBusy = true;
-            }
-          }
+        } else {
+          this.$emit('deleteFloor', this.iElevator)
         }
         
-        if((this.elevatorFloor !== resultFloor) && !floorBusy) {
-          this.elevatorTurn.push(resultFloor);
-        }
-      },
-
-      saveState () {
-        const {elevatorTop, elevatorTurn} = this;
-        let state = {
-          elevatorTop,
-          elevatorTurn
-        }
-        localStorage.setItem('elevatorState', JSON.stringify(state));
-      },
-      
-      clearState () {
-        localStorage.setItem('elevatorState', '');
       },
 
     },
@@ -118,19 +91,30 @@
 
     },
     mounted() {
-      let state = localStorage.getItem('elevatorState') ? JSON.parse(localStorage.getItem('elevatorState')) : '';
-
-      if(state) {
-        this.elevatorTurn = state.elevatorTurn;
-        this.elevatorTop = state.elevatorTop;
+      this.elevatorFloor = this.floorsCount;
+      this.elevatorTop = (this.floorsCount - 1)*100;
+      for(let i = 0; i < this.floorsCount; i++) {
+        this.floors.push(i*100);
       }
-      
-      setInterval(() => {
-        if(this.elevatorAvailable && (this.elevatorTurn.length > 0)) {
-          this.moveElevator(this.elevatorTurn[0]);
-          this.elevatorTurn.splice(0, 1);
-        }
-      }, 100)
+
+
+      // setInterval(() => {
+      //   if(this.elevatorAvailable && (this.elevatorTurn.length > 0)) {
+      //     this.moveElevator(this.elevatorTurn[0]);
+      //     this.elevatorTurn.splice(0, 1);
+      //   }
+      // }, 100)
+
+    },
+    watch: {
+      elevatorTurn: {
+        handler(){
+          if(this.elevatorAvailable && (this.elevatorTurn.length > 0)) {
+            this.moveElevator(this.elevatorTurn[0]);
+          }   
+        },
+        deep: true
+      }
     }
   }
 </script>
@@ -138,13 +122,10 @@
 
 <style scoped>
 
-.main {
-  display: flex;
-}
 .mine {
   width: 100px;
-  height: 500px;
   border: 2px solid black;
+  margin-right: 15px;
 }
 
 .elevator {
@@ -154,24 +135,15 @@
 }
 
 .elevator-wait {
-  animation: blink 1s infinite;
+  animation: flashing 1s infinite;
 }
 
-@keyframes blink {
+@keyframes flashing {
   0% { opacity: 1.0; }
   100% { opacity: 0.0; }
   0% { opacity: 1.0; }
 }
 
-.button-wrapper {
-  width: 100px;
-  height: 100px;
-}
-
-.button {
-  margin-top: 40px;
-  margin-left: 40px;
-}
 
 .result-floor {
   font-size: 35px;
